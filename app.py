@@ -475,11 +475,39 @@ def upload_file():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-
-# Automatically create database tables on startup if they don't exist
+# Automatically create database tables using raw SQL on startup
 with app.app_context():
-    db.create_all()
-    print("✅ Database tables verified/created successfully!")
+    create_tables_query = text("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            full_name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS health_assessments (
+            user_id INTEGER PRIMARY KEY REFERENCES users(id),
+            height_cm FLOAT,
+            weight_kg FLOAT,
+            gender VARCHAR(50),
+            bmi FLOAT,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS patient_illnesses (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id),
+            symptom_or_illness VARCHAR(255) NOT NULL
+        );
+    """)
+    
+    try:
+        db.session.execute(create_tables_query)
+        db.session.commit()
+        print("✅ Database tables explicitly verified/created using raw SQL!")
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error creating tables: {e}")
 
 if __name__ == '__main__':
     app.run(host=HOST, port=PORT, debug=DEBUG)
