@@ -312,8 +312,11 @@ fileUploadInput.addEventListener('change', async function(e) {
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
         const data = await res.json();
         embeddedChatMessages.removeChild(typingDiv);
-        if (data.analysis) {
-            let cleaned = data.analysis.replace(/[#*]/g, '');
+        
+        // --- THIS IS THE FIX --- 
+        // Changed data.analysis to data.text
+        if (data.text) {
+            let cleaned = data.text.replace(/[#*]/g, '');
             addEmbeddedChatMessage('bot', cleaned);
             generalChatHistory.push({ role: 'user', content: `Uploaded file: ${file.name}` });
             generalChatHistory.push({ role: 'assistant', content: cleaned });
