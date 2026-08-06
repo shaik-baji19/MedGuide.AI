@@ -282,12 +282,11 @@ function newGeneralChat() {
 }
 
 function deleteGeneralChat() {
-    if (confirm('Delete this chat session?')) {
-        newGeneralChat();
-        if (generalChatSessionId) {
-            fetch('/api/delete-chat/' + generalChatSessionId, { method: 'DELETE' });
-            generalChatSessionId = null;
-        }
+    // Delete instantly without the browser alert
+    newGeneralChat();
+    if (generalChatSessionId) {
+        fetch('/api/delete-chat/' + generalChatSessionId, { method: 'DELETE' });
+        generalChatSessionId = null;
     }
 }
 
