@@ -499,6 +499,14 @@ with app.app_context():
             user_id INTEGER REFERENCES users(id),
             symptom_or_illness VARCHAR(255) NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS generated_features (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id),
+            feature_type VARCHAR(255),
+            content TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
     """)
     
     try:
