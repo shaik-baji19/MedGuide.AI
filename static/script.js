@@ -281,13 +281,31 @@ function newGeneralChat() {
     generalChatSessionId = null;
 }
 
+// Opens the custom confirmation popup
 function deleteGeneralChat() {
-    // Delete instantly without the browser alert
-    newGeneralChat();
+    const modal = document.getElementById('customDeleteModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+// Closes the popup without deleting
+function closeDeleteModal() {
+    const modal = document.getElementById('customDeleteModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Executes the actual deletion if the user clicks "Yes"
+function executeChatDelete() {
+    closeDeleteModal(); // Hide the modal first
+    newGeneralChat();   // Clear the screen
+    
+    // Tell the backend to delete it from the database
     if (generalChatSessionId) {
         fetch('/api/delete-chat/' + generalChatSessionId, { method: 'DELETE' });
         generalChatSessionId = null;
     }
+    
+    // Trigger your app's built-in notification system!
+    showNotification('Chat Deleted', 'Your session has been permanently removed.');
 }
 
 embeddedChatInput.addEventListener('keydown', function(e) {
